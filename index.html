@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinchana B N | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body.modal-active { overflow: hidden; }
+        .theme-transition { transition: background-color 0.3s, color 0.3s; }
+        
+        /* Skills Glow Effect */
+        .skill-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .skill-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 3D Project Hover Pop-up with Info reveal */
+        .project-card {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            perspective: 1000px;
+        }
+        .project-info-reveal {
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+        }
+        .project-card:hover .project-info-reveal {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+
+        /* Typing Animation */
+        .typing-text::after {
+            content: "|";
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        /* Resume Modal Backdrop */
+        #resume-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Particle Canvas */
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans scroll-smooth theme-transition">
+
+    <div id="resume-modal" onclick="closeResumeModal(event)">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center mx-4 border border-slate-200 dark:border-slate-800" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-file-pdf text-blue-600 text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-black mb-2 text-slate-800 dark:text-white">Resume Access</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-8 text-sm">How would you like to proceed with the document?</p>
+            <div class="flex flex-col gap-3">
+                <a href="https://drive.google.com/file/d/1_BTqINEsJYfGTtDFuBo41S1pR-zQVvsf/view?usp=sharing" target="_blank" class="bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-eye"></i> View Online
+                </a>
+                <a href="https://drive.google.com/uc?export=download&id=1_BTqINEsJYfGTtDFuBo41S1pR-zQVvsf" class="border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-bold py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i> Download Directly
+                </a>
+                <button onclick="closeResumeModal()" class="text-slate-400 text-xs mt-2 hover:underline uppercase font-bold tracking-widest">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">SINCHANA B N</span>
+            <div class="flex items-center space-x-6">
+                <div class="hidden md:flex space-x-8 font-bold uppercase tracking-widest text-xs">
+                    <a href="#about" class="hover:text-blue-600 transition">About</a>
+                    <a href="#skills" class="hover:text-blue-600 transition">Skills</a>
+                    <a href="#projects" class="hover:text-blue-600 transition">Projects</a>
+                </div>
+                <div class="flex items-center space-x-4 border-l pl-6 border-slate-200 dark:border-slate-700">
+                    <a href="https://www.linkedin.com/in/sinchana-nandeesh" target="_blank" class="text-slate-400 hover:text-[#0077b5] transition"><i class="fab fa-linkedin text-xl"></i></a>
+                    <a href="https://github.com/codewith-sinchana" target="_blank" class="text-slate-400 hover:text-black dark:hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                </div>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400">
+                    <i id="theme-icon" class="fas fa-moon"></i>
+                </button>
+                <button onclick="openResumeModal()" class="bg-blue-600 text-white px-5 py-2 rounded-full text-xs font-bold hover:bg-blue-700 transition flex items-center gap-2">
+                    <i class="fas fa-file-alt"></i> RESUME
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-48 pb-24 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white relative overflow-hidden">
+        <canvas id="hero-canvas"></canvas>
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-6 mb-12 px-8 py-4 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl animate-float">
+                <div class="text-left border-r border-white/20 pr-8">
+                    <p class="text-[10px] uppercase text-blue-400 font-black tracking-[0.2em]">Live Mirror Time</p>
+                    <h3 id="live-clock" class="text-3xl font-mono font-bold tracking-tighter text-blue-100">00:00:00</h3>
+                </div>
+                <div class="text-left">
+                    <p class="text-[10px] uppercase text-blue-400 font-black tracking-[0.2em]">Tumkuru Temp</p>
+                    <h3 id="live-weather" class="text-3xl font-bold text-blue-100">--°C</h3>
+                </div>
+            </div>
+
+            <h1 class="text-6xl md:text-8xl font-black mb-6 tracking-tighter text-white">
+                <span id="type-target" class="typing-text">Full-Stack Engineer</span>
+            </h1>
+            <p class="text-xl text-slate-300 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
+                Third-year student at Sri Siddhartha Institute of Technology specializing in high-performance web and mobile architectures.
+            </p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                <div class="p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition">
+                    <p class="text-4xl font-black text-blue-500 mb-1">3rd</p>
+                    <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Year CSE</p>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition">
+                    <p class="text-4xl font-black text-indigo-500 mb-1">5+</p>
+                    <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Projects Done</p>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition">
+                    <p class="text-4xl font-black text-cyan-500 mb-1">1</p>
+                    <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Industry Internship</p>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm group hover:bg-white/10 transition">
+                    <p class="text-4xl font-black text-emerald-500 mb-1">7.0</p>
+                    <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Academic CGPA</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 bg-white dark:bg-slate-900 transition-colors">
+        <div class="container mx-auto px-6 max-w-5xl">
+            <h2 class="text-sm font-black text-blue-600 uppercase tracking-[0.3em] mb-4">Professional Bio</h2>
+            <div class="grid md:grid-cols-2 gap-16 items-start">
+                <div class="space-y-6">
+                    <p class="text-2xl font-bold leading-tight text-slate-800 dark:text-slate-100">
+                        Motivated developer with a strong foundation in designing scalable and user-focused applications.
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-400">
+                        Highly experienced in frameworks like React, Django, and React Native. I thrive in collaborative environments, solving complex problems with technical innovation.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <i class="fas fa-brain text-blue-500 mb-3 text-xl"></i>
+                        <p class="text-xs font-bold uppercase tracking-wider mb-1">Soft Skills</p>
+                        <ul class="text-[11px] text-slate-500 space-y-1 font-medium">
+                            <li>Problem Solving</li>
+                            <li>Team Collaboration</li>
+                            <li>Time Management</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <i class="fas fa-graduation-cap text-indigo-500 mb-3 text-xl"></i>
+                        <p class="text-xs font-bold uppercase tracking-wider mb-1">Education</p>
+                        <p class="text-[11px] text-slate-500 font-medium">SSIT Tumkuru<br>BE in CSE<br>Batch 2023-Present</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-24 bg-slate-50 dark:bg-slate-950 transition-colors">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl font-black mb-16 tracking-tight">Technical Dominance</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="skill-card bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800">
+                    <i class="fas fa-layer-group text-blue-600 text-2xl mb-6"></i>
+                    <h3 class="text-xl font-bold mb-6">Development</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
+                            <span class="text-sm font-bold">Django</span>
+                            <span class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase">Expert</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
+                            <span class="text-sm font-bold">React.js</span>
+                            <span class="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-full uppercase">Expert</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-card bg-blue-600 p-8 rounded-3xl text-white shadow-xl scale-105 z-10">
+                    <i class="fas fa-terminal text-2xl mb-6 text-blue-100"></i>
+                    <h3 class="text-xl font-bold mb-6">Languages</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center bg-white/10 p-3 rounded-xl">
+                            <span class="text-sm font-bold">Python</span>
+                            <span class="text-[10px] bg-white text-blue-600 px-2 py-0.5 rounded-full uppercase">Advanced</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/10 p-3 rounded-xl">
+                            <span class="text-sm font-bold">Java & DSA</span>
+                            <span class="text-[10px] bg-white text-blue-600 px-2 py-0.5 rounded-full uppercase">Advanced</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skill-card bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800">
+                    <i class="fas fa-pen-nib text-cyan-600 text-2xl mb-6"></i>
+                    <h3 class="text-xl font-bold mb-6">Design & Tools</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
+                            <span class="text-sm font-bold">Figma & UX</span>
+                            <span class="text-[10px] bg-cyan-600 text-white px-2 py-0.5 rounded-full uppercase">Intermediate</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
+                            <span class="text-sm font-bold">PostgreSQL</span>
+                            <span class="text-[10px] bg-cyan-600 text-white px-2 py-0.5 rounded-full uppercase">Intermediate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-24 bg-white dark:bg-slate-900 transition-colors">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-black mb-16 text-center tracking-tight">Featured Engineering Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
+                <div class="project-card bg-slate-50 dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-700">
+                    <div class="flex gap-2 mb-6"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="w-3 h-3 rounded-full bg-indigo-500"></span></div>
+                    <h3 class="text-3xl font-black mb-4">Medibridge</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Empowering users with comparative English and Ayurvedic data.</p>
+                    <div class="project-info-reveal">
+                        <div class="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
+                            <p class="text-xs font-bold text-blue-600 uppercase tracking-tighter">Core Features:</p>
+                            <ul class="text-[11px] space-y-2 text-slate-600 dark:text-slate-400 font-medium">
+                                <li>• Responsive UI with React.js searches.</li>
+                                <li>• Robust API management via Node.js.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card bg-slate-50 dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-700">
+                    <div class="flex gap-2 mb-6"><span class="w-3 h-3 rounded-full bg-purple-500"></span><span class="w-3 h-3 rounded-full bg-yellow-500"></span></div>
+                    <h3 class="text-3xl font-black mb-4">Civic Portal</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">A Django-based digital transparency platform for citizens.</p>
+                    <div class="project-info-reveal">
+                        <div class="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
+                            <p class="text-xs font-bold text-indigo-600 uppercase tracking-tighter">Core Features:</p>
+                            <ul class="text-[11px] space-y-2 text-slate-600 dark:text-slate-400 font-medium">
+                                <li>• Submit/Track complaints online.</li>
+                                <li>• Integrated Admin dashboard (MVT).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card bg-slate-50 dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-700">
+                    <div class="flex gap-2 mb-6"><span class="w-3 h-3 rounded-full bg-cyan-500"></span><span class="w-3 h-3 rounded-full bg-red-500"></span></div>
+                    <h3 class="text-3xl font-black mb-4">Smart Reflect</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Interactive hardware mirror with health monitoring sensors.</p>
+                    <div class="project-info-reveal">
+                        <div class="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
+                            <p class="text-xs font-bold text-cyan-600 uppercase tracking-tighter">Core Features:</p>
+                            <ul class="text-[11px] space-y-2 text-slate-600 dark:text-slate-400 font-medium">
+                                <li>• Heart rate & temp monitoring (Arduino).</li>
+                                <li>• Dynamic IR and DHT11 integration.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="bg-slate-900 text-white py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-black mb-8 uppercase tracking-widest">Connect</h2>
+            <div class="flex flex-wrap justify-center gap-12 text-sm font-bold">
+                <a href="tel:9741649040" class="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition"><i class="fas fa-phone text-blue-500"></i> 9741649040</a>
+                <a href="mailto:sinchanandeesh@gmail.com" class="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition"><i class="fas fa-envelope text-blue-500"></i> sinchanandeesh@gmail.com</a>
+                <div class="flex items-center space-x-6 border-l border-slate-700 pl-12">
+                    <a href="https://www.linkedin.com/in/sinchana-nandeesh" target="_blank" class="text-slate-400 hover:text-[#0077b5] transition"><i class="fab fa-linkedin text-2xl"></i></a>
+                    <a href="https://github.com/codewith-sinchana" target="_blank" class="text-slate-400 hover:text-white transition"><i class="fab fa-github text-2xl"></i></a>
+                </div>
+            </div>
+            <p class="mt-12 text-[10px] text-slate-600 uppercase tracking-[0.4em]">Sinchana B N &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // Typing Animation
+        const roles = ["Full-Stack Engineer", "CSE Researcher", "IoT Specialist", "UI/UX Designer"];
+        let rIdx = 0, cIdx = 0, del = false;
+        function type() {
+            const current = roles[rIdx], target = document.getElementById('type-target');
+            target.textContent = del ? current.substring(0, cIdx--) : current.substring(0, cIdx++);
+            if (!del && cIdx === current.length + 1) { del = true; setTimeout(type, 2000); }
+            else if (del && cIdx === 0) { del = false; rIdx = (rIdx + 1) % roles.length; setTimeout(type, 500); }
+            else setTimeout(type, del ? 50 : 150);
+        }
+        type();
+
+        // Particle Background
+        const canvas = document.getElementById('hero-canvas'), ctx = canvas.getContext('2d');
+        let pts = [];
+        function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = res; res();
+        class Pt {
+            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.vx = Math.random() * 2 - 1; this.vy = Math.random() * 2 - 1; }
+            up() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > canvas.width) this.vx *= -1; if (this.y < 0 || this.y > canvas.height) this.vy *= -1; }
+        }
+        for (let i = 0; i < 50; i++) pts.push(new Pt());
+        function loop() {
+            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle = "white";
+            pts.forEach(p => {
+                p.up(); ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+                pts.forEach(p2 => {
+                    let d = Math.hypot(p.x-p2.x, p.y-p2.y);
+                    if (d < 150) { ctx.strokeStyle = `rgba(255,255,255,${1 - d/150})`; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y); ctx.stroke(); }
+                });
+            }); requestAnimationFrame(loop);
+        }
+        loop();
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            icon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function updateClock() {
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=13.3379&longitude=77.1173&current_weather=true');
+                const data = await res.json();
+                document.getElementById('live-weather').innerText = `${Math.round(data.current_weather.temperature)}°C`;
+            } catch { document.getElementById('live-weather').innerText = "24°C"; }
+        }
+        fetchWeather();
+
+        function openResumeModal() { document.getElementById('resume-modal').style.display = 'flex'; document.body.classList.add('modal-active'); }
+        function closeResumeModal() { document.getElementById('resume-modal').style.display = 'none'; document.body.classList.remove('modal-active'); }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+        }
+    </script>
+</body>
+</html>
